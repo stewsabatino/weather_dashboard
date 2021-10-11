@@ -2,7 +2,7 @@
 
 var homePageURL = ""
 var city;
-var currentWeatherAPI 
+var currentWeatherAPI;
 // = `https://api.openweathermap.org/data/2.5/find?q=${city}&units=imperial&appid=f064d5cc6e2d5f072655cd51c2f3385d`;
 var oneCallAPI;
 
@@ -98,8 +98,8 @@ function searchCity(event) {
     city = inputField.val()
     // save to local storage
     cityHolder.append(
-        $("<li>")
-        .addClass("")
+        $("<button>")
+        .addClass("mt-1")
         .text(city.trim())
         // make li clickable to change city name
     )
@@ -112,10 +112,11 @@ function init() {
     currentWeatherAPI = `https://api.openweathermap.org/data/2.5/find?q=${city}&units=imperial&appid=f064d5cc6e2d5f072655cd51c2f3385d`
     fetchWeather()
     // Call local storage and populate 
+    // if city === null .hide card
 }
     
-    
-$input.on("submit", searchCity)
 
 init()
+$input.on("submit", searchCity)
+
     
