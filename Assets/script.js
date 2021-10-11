@@ -32,12 +32,28 @@ function populateCurrentWeather(data) {
 
 var $h5 = $("h5")
 var $icon = $("#icon")
+var $day1 = $("#dayOne")
+var $day2 = $("#dayTwo")
+var $day3 = $("#dayThree")
+var $day4 = $("#dayFour")
+var $day5 = $("#dayFive")
+var days = [$day1, $day2, $day3, $day4, $day5]
+var $daily = $(".daily")
 
-
-
-
-
-
+function fiveDayPop(oneCallData) {
+    for (var i = 0; i < days.length; i++) {
+        var dateObject = new Date(oneCallData.daily[i+1].dt*1000)
+        days[i].find("h5").text(dateObject.toLocaleDateString())
+        var $icon = oneCallData.daily[i+1].weather[0].icon
+        days[i].find("#icon").html("<img src=http://openweathermap.org/img/wn/" + $icon + "@2x.png>")
+        var $temp = oneCallData.daily[i+1].temp.max
+        days[i].find("#temp").text(`${$temp} F`)
+        var $wind = oneCallData.daily[i+1].wind_speed
+        days[i].find("#wind").text(`${$wind} mph`)
+        var $humidity = oneCallData.daily[i+1].humidity
+        days[i].find("#humidity").text(`${$humidity}%`)
+    }
+}
 
 
 function fetchWeather() {
@@ -66,7 +82,8 @@ function fetchWeather() {
             }
         })
         .then(function(oneCallData) {
-            
+            fiveDayPop(oneCallData)
+
         })
     })
 
