@@ -1,8 +1,9 @@
 
 
 var homePageURL = ""
-var city = "Chicago";
-var currentWeatherAPI = `https://api.openweathermap.org/data/2.5/find?q=${city}&units=imperial&appid=f064d5cc6e2d5f072655cd51c2f3385d`;
+var city;
+var currentWeatherAPI 
+// = `https://api.openweathermap.org/data/2.5/find?q=${city}&units=imperial&appid=f064d5cc6e2d5f072655cd51c2f3385d`;
 var oneCallAPI;
 
 
@@ -94,18 +95,23 @@ var cityHolder = $input.find("ul")
 
 function searchCity(event) {
     event.preventDefault() 
-    var city = inputField.val()
+    city = inputField.val()
+    // save to local storage
     cityHolder.append(
         $("<li>")
         .addClass("")
-        .text(city.trim())    
+        .text(city.trim())
+        // make li clickable to change city name
     )
-    // var currentWeatherAPI = `https://api.openweathermap.org/data/2.5/find?q=Chicago&units=imperial&appid=f064d5cc6e2d5f072655cd51c2f3385d`;   
+    currentWeatherAPI = `https://api.openweathermap.org/data/2.5/find?q=${city}&units=imperial&appid=f064d5cc6e2d5f072655cd51c2f3385d`;   
     fetchWeather()
 }
     
 function init() {
+    city = "Chicago"
+    currentWeatherAPI = `https://api.openweathermap.org/data/2.5/find?q=${city}&units=imperial&appid=f064d5cc6e2d5f072655cd51c2f3385d`
     fetchWeather()
+    // Call local storage and populate 
 }
     
     
