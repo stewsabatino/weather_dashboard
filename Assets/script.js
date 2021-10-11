@@ -1,8 +1,8 @@
 
 
 var homePageURL = ""
-var currentWeatherAPI = "https://api.openweathermap.org/data/2.5/find?q=Chicago&units=imperial&appid=f064d5cc6e2d5f072655cd51c2f3385d";
-// change london to input or Chicago to start
+var city = "Chicago";
+var currentWeatherAPI = `https://api.openweathermap.org/data/2.5/find?q=${city}&units=imperial&appid=f064d5cc6e2d5f072655cd51c2f3385d`;
 var oneCallAPI;
 
 
@@ -16,7 +16,8 @@ var $description = $("#description")
 
 function populateCurrentWeather(data) {
     var cityName = data.list[0].name
-    $h4.text(cityName)
+    var $icon = data.list[0].weather[0].icon
+    $h4.html(`${cityName} <img src=http://openweathermap.org/img/wn/${$icon}@2x.png>`)
     var temp = data.list[0].main.temp
     $temp.text(`Temperature: ${temp} F`)
     var feelsLike = data.list[0].main.feels_like
@@ -27,7 +28,6 @@ function populateCurrentWeather(data) {
     $wind.text(`wind: ${wind} mph`)
     var description = data.list[0].weather[0].description
     $description.text(description)
-    console.log(description)
 }
 
 var $h5 = $("h5")
@@ -58,7 +58,7 @@ function fiveDayPop(oneCallData) {
 
 function fetchWeather() {
     fetch(currentWeatherAPI)
-
+    
     .then(function(response) {
         if (response.status !== 200) {
             // change to correct html
@@ -78,14 +78,38 @@ function fetchWeather() {
                 // change to correct html
                 document.location.replace(google.com)
             } else {
-            return oneCallRes.json()
+                return oneCallRes.json()
             }
         })
         .then(function(oneCallData) {
             fiveDayPop(oneCallData)
-
+            
         })
     })
-
 }
-fetchWeather()
+
+var $input = $("#form")
+var inputField = $input.find("input")
+var cityHolder = $input.find("ul")
+
+function searchCity(event) {
+    event.preventDefault() 
+    var city = inputField.val()
+    cityHolder.append(
+        $("<li>")
+        .addClass("")
+        .text(city.trim())    
+    )
+    // var currentWeatherAPI = `https://api.openweathermap.org/data/2.5/find?q=Chicago&units=imperial&appid=f064d5cc6e2d5f072655cd51c2f3385d`;   
+    fetchWeather()
+}
+    
+function init() {
+    fetchWeather()
+}
+    
+    
+$input.on("submit", searchCity)
+
+init()
+    
