@@ -1,6 +1,6 @@
 # weather_dashboard
 search a city and get the current weather along with the 5 day forecast
-HTML - 
+HTML - https://stewsabatino.github.io/weather_dashboard/
 Snippet - <img src="./Assets/pictures/weather_snippet.png" alt="weather dashboard with Chicago's current weather and 5 day forecast">
 
 ## Goals
