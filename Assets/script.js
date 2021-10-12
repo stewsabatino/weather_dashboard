@@ -3,7 +3,6 @@
 var homePageURL = ""
 var city;
 var currentWeatherAPI;
-// = `https://api.openweathermap.org/data/2.5/find?q=${city}&units=imperial&appid=f064d5cc6e2d5f072655cd51c2f3385d`;
 var oneCallAPI;
 
 
@@ -15,10 +14,12 @@ var $humidity = $("#humidity")
 var $wind = $("#wind")
 var $description = $("#description")
 
+// populates current day weather with currentweather API fetch call
 function populateCurrentWeather(data) {
     var cityName = data.list[0].name
     var $icon = data.list[0].weather[0].icon
-    $h4.html(`${cityName} <img src=http://openweathermap.org/img/wn/${$icon}@2x.png>`)
+    // sets city name and icon
+    $h4.html(`Today in ${cityName} <img src=http://openweathermap.org/img/wn/${$icon}@2x.png>`)
     var temp = data.list[0].main.temp
     $temp.text(`Temperature: ${temp} F`)
     var feelsLike = data.list[0].main.feels_like
@@ -41,9 +42,13 @@ var $day5 = $("#dayFive")
 var days = [$day1, $day2, $day3, $day4, $day5]
 var $daily = $(".daily")
 
+// loops through each card with id of day[i] to place 5 day weather forecast
+// same concept as the currentweather API, but this one uses oneCall 
 function fiveDayPop(oneCallData) {
     for (var i = 0; i < days.length; i++) {
+        // use plus one because in api fetch [0] is for current day
         var dateObject = new Date(oneCallData.daily[i+1].dt*1000)
+        // days[i] is is the days array with content of #days
         days[i].find("h5").text(dateObject.toLocaleDateString())
         var $icon = oneCallData.daily[i+1].weather[0].icon
         days[i].find("#icon").html("<img src=http://openweathermap.org/img/wn/" + $icon + "@2x.png>")
@@ -59,29 +64,34 @@ function fiveDayPop(oneCallData) {
 
 function fetchWeather() {
     fetch(currentWeatherAPI)
-    
+    // checks to see if the response is ok
     .then(function(response) {
         if (response.status !== 200) {
             // change to correct html
-            document.location.replace(google.com)
+            document.location.replace()
         } else {
+            // return readable data
             return response.json()
         }
     })
     .then(function(data) {
+        // use data to put into function
         populateCurrentWeather(data)
+        // pull lat and lon out of data and put into oneCall API url to fetch that data
         var lat = data.list[0].coord.lat
         var lon = data.list[0].coord.lon
         oneCallAPI = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=imperial&exclude=current,minutely,hourly,alerts&appid=f064d5cc6e2d5f072655cd51c2f3385d`
         fetch(oneCallAPI)
         .then(function(oneCallRes) {
+            // Again check if response is ok
             if (oneCallRes.status !== 200) {
                 // change to correct html
-                document.location.replace(google.com)
+                document.location.replace()
             } else {
                 return oneCallRes.json()
             }
         })
+        // use readable data to supply fiveDayPop function with data
         .then(function(oneCallData) {
             fiveDayPop(oneCallData)
             
@@ -91,32 +101,75 @@ function fetchWeather() {
 
 var $input = $("#form")
 var inputField = $input.find("input")
-var cityHolder = $input.find("ul")
+var $search = $("#search")
+var cityHolder = $search.find("ul")
 
-function searchCity(event) {
-    event.preventDefault() 
-    city = inputField.val()
-    // save to local storage
+// create button from input submit and local storage
+function createButton () {
     cityHolder.append(
+        // creates button
         $("<button>")
         .addClass("mt-1")
-        .text(city.trim())
-        // make li clickable to change city name
+        .attr("id", "button")
+        // gives text of city
+        .text(city)
     )
+}
+
+// sets array to push input submits into to save into local storage
+var cities = []
+// searches city that was submitted into the input field
+function searchCity(event) {
+    event.preventDefault()
+    // sets variable equal to the value and then trims
+    city = inputField.val()
+    city.trim()
+    // pushes city to the cities array
+    cities.push(city)
+    // saves array to local storage
+    localStorage.setItem("city", JSON.stringify(cities))
+    createButton()
+    // sets inputfield back to empty
+    inputField.val("")
+    // set currentWeatherAPI url for fetchWeather to use with city 
     currentWeatherAPI = `https://api.openweathermap.org/data/2.5/find?q=${city}&units=imperial&appid=f064d5cc6e2d5f072655cd51c2f3385d`;   
     fetchWeather()
 }
     
+// initial function on page load. Chicago weather
 function init() {
+    // call local storage to populate
+    var savedChar = JSON.parse(localStorage.getItem("city"))
     city = "Chicago"
     currentWeatherAPI = `https://api.openweathermap.org/data/2.5/find?q=${city}&units=imperial&appid=f064d5cc6e2d5f072655cd51c2f3385d`
     fetchWeather()
-    // Call local storage and populate 
-    // if city === null .hide card
+    // populate button area with local storage if it is there
+    if (savedChar){
+        for (var i = 0; i < savedChar.length; i++) {
+            console.log(savedChar[i])
+            cityHolder.append(
+                $("<button>")
+                .addClass("mt-1")
+                .attr("id", "button")
+                .attr("type", "button")
+                .text(savedChar[i])
+                )
+            }
+    } else {
+        return
+    }
 }
     
-
+// initial function to load
 init()
+// input field submit
 $input.on("submit", searchCity)
+// on button click change weather to the button text
+$("#button").on("click", function(event) {
+    event.preventDefault()
+    console.log("hello")
+    city = event.target.text()
+    console.log(city)
+})
 
     
